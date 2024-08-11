@@ -76,13 +76,43 @@ $fn = $preview ? LOW_RESOLUTION : HIGH_RESOLUTION ; // Facets in preview (F5) se
     see_me_in_colourful(){
         translate([0,0,0]){
             difference(){
-                
-                translate([25,40,15]){                    
-                    scale([0.4,0.4,0.4]){        
-                        
+                translate([0,Wallthickness/2+Length_y,0]){
+                    rotate([90,0,0]){
+                        translate([0,0,0]){
+                            Frame_BaseBlock(Length_y);
+                        }
+                    }
+                }
+                translate([0,0,0]){
+                    rotate([0,0,0]){
+                        Frame_BlockCUT();
+                    }
+                }
+                translate([0,0,0]){
+                    Hex_Mesch_Cutter();
+                }
+                translate([0,Length_y/12,Height_z-2*Wallthickness]){
+                    rotate([0,-90,0]){
+                        translate([0,0,-Wallthickness+Wallthickness/4]){
+                            Screwcutter(100,10,100,4,1,5);
+                        }
+                    }
+                }
+                translate([0,Length_y-Length_y/12-Wallthickness,Height_z-2*Wallthickness]){
+                    rotate([0,-90,0]){
+                        translate([0,0,-Wallthickness+Wallthickness/4]){
+                            Screwcutter(100,10,100,4,1,5);
+                        }
+                    }
+                }   
+                translate([0,(Length_y/2)-Wallthickness/2,Height_z-2*Wallthickness]){
+                    rotate([0,-90,0]){
+                        translate([0,0,-Wallthickness+Wallthickness/4]){
+                            Screwcutter(100,10,100,4,1,5);
+                        }
+                    }
+                }
             }
-        }
-    }
         }
         translate([0,0,0]){
         
@@ -93,6 +123,9 @@ $fn = $preview ? LOW_RESOLUTION : HIGH_RESOLUTION ; // Facets in preview (F5) se
             }
         }
         translate([0,0,0]){
+        }
+        translate([Depth_x+Wallthickness,-Wallthickness-Radius-1/2,0]){ // Yah its dirty, but i am Starved now and want to eat!
+            cube([Wallthickness/2,Length_y+2*Wallthickness,Wallthickness]);
         }
         translate([0,0,0]){
             if(CUT_MODULES_RENDERED=="true"){
@@ -105,7 +138,8 @@ $fn = $preview ? LOW_RESOLUTION : HIGH_RESOLUTION ; // Facets in preview (F5) se
         union(){
             
         }
-        translate([ 0,0,0]){
+        translate([25,39,0]){
+            SCREWDRIVER();
         }
     }
 }
@@ -152,11 +186,24 @@ module see_me_in_colourful(){ // iterates the given modules and colors them auto
 // =--------------------------------- Enviroment Modules ------------------------=
 // ===============================================================================
 // Modules that resembles the Enviroment aka the helmet where to atach a camera mount
-
+// SCREWDRIVER();
+module SCREWDRIVER(){
+    translate([0,0,0]){
+        color(c=[0.5,0.5,0.5], alpha=0.2){
+            translate([0,0,Wallthickness]){
+                cylinder(h=100, d1=25, d2=25, $fn=6);
+            }
+            translate([0,0,Wallthickness-100]){
+                cylinder(h=100, d1=9, d2=9, $fn=74);
+            }
+        }
+    }
+}
 // ===============================================================================
 // =--------------------------------- Modules -----------------------------------=
 // ===============================================================================
-Frame();
+
+//Frame();
 module Frame(){
     translate([0,0,0]){
         difference(){            
@@ -172,7 +219,7 @@ module Frame(){
                     Frame_BlockCUT();
                 }
             }
-            #Hex_Mesch_Cutter();
+            Hex_Mesch_Cutter();
             translate([0,Length_y/12,Height_z-2*Wallthickness]){
                 rotate([0,-90,0]){
                     translate([0,0,-Wallthickness+Wallthickness/4]){
@@ -194,6 +241,9 @@ module Frame(){
                     }
                 }
             }
+        }
+        translate([Depth_x+Wallthickness,-Wallthickness-Radius-1/2,0]){ // Yah its dirty, but i am Starved now and want to eat!
+            cube([Wallthickness/2,Length_y+2*Wallthickness,Wallthickness]);
         }
     }
 }
