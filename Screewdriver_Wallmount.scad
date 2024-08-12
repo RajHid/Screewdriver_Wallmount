@@ -55,8 +55,8 @@ if (DesignStatus=="printing"){
 }
 if(DesignStatus=="fitting"){
     intersection(){
-        translate([0,0,1]){
-            cube([1000,1000,1],center=true);
+        translate([0,0,Wallthickness]){
+            cube([1000,1000,0.35],center=true);
         }
         Main_Assembly(16,76,"false");
     }
@@ -139,7 +139,7 @@ $fn = $preview ? LOW_RESOLUTION : HIGH_RESOLUTION ; // Facets in preview (F5) se
             
         }
         translate([25,39,0]){
-            SCREWDRIVER();
+            //SCREWDRIVER();
         }
     }
 }
@@ -465,14 +465,15 @@ module 2D_Rounded_Square_Base_Shape(DIMENSION_X=10,DIMENSION_Y=20,RADIUS=2,CENTE
     }
 }
 //HEX_Mesh_Pattern(){ Mesh(2.5,2.5);}
-module HEX_Mesh_Pattern(X=7,Y=13,DELTA=6,GRPL_X=45,GRPL_Y=115){
+!HEX_Mesh_Pattern(7,13,6,45,155,2);
+module HEX_Mesh_Pattern(X=7,Y=13,DELTA=6,GRPL_X=45,GRPL_Y=115,MINK_R=1){
 Count_X=X;
 Count_Y=Y;
 DIMENSION_X=90;
 DIMENSION_Y=150;
 
 //DELTA=1;
-
+// MINK_R: Radius of the minkowski funktion to smothen the edges
 X_STEPP=5.5+DELTA;
 Y_STEPP=7.5+DELTA;
 
@@ -488,19 +489,44 @@ echo("HEX_D",HEX_D);
     
 // +++++++++++++++++++++++++++++++++++++++++
     scale([1,1,1]){
-        union(){
-            for(j=[0:1:Count_Y-1]){
-                for(i=[0:1:Count_X-1-j%2]){
-                    translate([i*(HEX_D+k/2),0,0]){
-                        translate([(HEX_D/2+k/4)*(j%2),
-                                    j*((HEX_D/2+k/4)*sqrt(3)),
-                                    0]                          ){
-                        //translate([0,j*Y_STEPP,0]){
-                        rotate([0,0,30]){
-                            //Mesh(0.5){square([HEX_D,HEX_D*1.2],center=true);}
-                            circle(d=HEX_D,$fn=6);
+        if(MINK_R!=0){
+            union(){
+                for(j=[0:1:Count_Y-1]){
+                    for(i=[0:1:Count_X-1-j%2]){
+                        translate([i*(HEX_D+k/2),0,0]){
+                            translate([(HEX_D/2+k/4)*(j%2),
+                                        j*((HEX_D/2+k/4)*sqrt(3)),
+                                        0]                          ){
+                            //translate([0,j*Y_STEPP,0]){
+                            rotate([0,0,30]){
+                                //Mesh(0.5){square([HEX_D,HEX_D*1.2],center=true);}
+                                minkowski(){
+                                    circle(d=HEX_D-(2*MINK_R),$fn=6);
+                                    circle(r=MINK_R,$fn=32);
+                                }
+                            }
+                                //children();
+                            }
                         }
-                            //children();
+                    }
+                }
+            }
+        }
+        else{
+            union(){
+                for(j=[0:1:Count_Y-1]){
+                    for(i=[0:1:Count_X-1-j%2]){
+                        translate([i*(HEX_D+k/2),0,0]){
+                            translate([(HEX_D/2+k/4)*(j%2),
+                                        j*((HEX_D/2+k/4)*sqrt(3)),
+                                        0]                          ){
+                            //translate([0,j*Y_STEPP,0]){
+                            rotate([0,0,30]){
+                                //Mesh(0.5){square([HEX_D,HEX_D*1.2],center=true);}
+                                circle(d=HEX_D,$fn=6);
+                            }
+                                //children();
+                            }
                         }
                     }
                 }
