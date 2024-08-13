@@ -13,22 +13,32 @@
 DesignStatus="sizing"; // ["sizing","fitting","printing"]
 // Variables seen by customizer
 
-Depth_x=80;
-Length_y=161;
-Height_z=35;
-Wallthickness=5;
-Radius=2;
-DELTA_X=3;
-DELTA_Y=0;
+Depth_x=80;             // of the box and hex plate
+Length_y=161;           // of the box and hex plate
+Height_z=35;            // of the box and hex plate
+Wallthickness=5;        // Wallthickness of the box and hex plate
+
+HolesN_X=8;             // Number of Holes in X Direction
+HolesN_Y=15;            // Number of Holes in Y Direction
+WallThicknesHEX=4.5;    // Thicknes of the Hex Mesh wire
+
+FilletRadius=2;         // Fillet radii of the big Part, 
+HEXFilletRadius=2;      // Fillet radius of the Hex cuts
+
+No_Mount=false; // ["false","true"]
+
+DELTA_X=3; // Shifts the Hex Pattern in X
+DELTA_Y=0; // Shifts the Hex Pattern in Y
+
 
 module __Customizer_Limit__ () {}  // before these, the variables are usable in the cutomizer
 shown_by_customizer = false;
 
 //
 
-Invisible=42;
-TestslabTransl_X=25;
-TestslabRotate_X=30;
+//Invisible=42;
+//TestslabTransl_X=25;
+//TestslabRotate_X=30;
 
 // === Facettes Numbers ===
 
@@ -51,7 +61,7 @@ FN_ExtraFine=144;
 // = Customizer Section =
 // ==================================
 if (DesignStatus=="printing"){
-    Main_Assembly(36,76,"false");
+    Main_Assembly(36,76,"false",No_Mount=false);
 }
 if(DesignStatus=="fitting"){ 
     intersection(){
@@ -65,6 +75,7 @@ if(DesignStatus=="fitting"){
 if (DesignStatus=="sizing"){
     Main_Assembly(16,36,"true");
 }
+
 // ==================================
 // = MAINASSEMBLY =
 // ==================================
@@ -72,7 +83,7 @@ if (DesignStatus=="sizing"){
 // HIGH_RESOLUTION: high resolution value for rendering the .stl
 // CUT_MODULES_RENDERED: decides if the cuttingmodules get renderred to see them. use cuttingmodules twice one time within the final part to cut and one time to just schow it.
 // Main_Assembly(12,76,true);
-module Main_Assembly(LOW_RESOLUTION=12,HIGH_RESOLUTION=36,CUT_MODULES_RENDERED){
+module Main_Assembly(LOW_RESOLUTION=12,HIGH_RESOLUTION=36,CUT_MODULES_RENDERED,No_Mount=false){
 $fn = $preview ? LOW_RESOLUTION : HIGH_RESOLUTION ; // Facets in preview (F5) set to 12, in Reder (F6) is set to 72
     see_me_in_colourful(){
         translate([0,0,0]){
@@ -92,24 +103,27 @@ $fn = $preview ? LOW_RESOLUTION : HIGH_RESOLUTION ; // Facets in preview (F5) se
                 translate([0,0,0]){
                     Hex_Mesch_Cutter();
                 }
-                translate([0,Length_y/12,Height_z-2*Wallthickness]){
-                    rotate([0,-90,0]){
-                        translate([0,0,-Wallthickness+Wallthickness/4]){
-                            Screwcutter(100,8.5,100,3.1,1.5,4.1);
+                if(No_Mount==true){}
+                else if(No_Mount==false){
+                    translate([0,Length_y/12,Height_z-2*Wallthickness]){
+                        rotate([0,-90,0]){
+                            translate([0,0,-Wallthickness+Wallthickness/4]){
+                                Screwcutter(100,8.5,100,3.1,1.5,4.1);
+                            }
                         }
                     }
-                }
-                translate([0,Length_y-Length_y/12-Wallthickness,Height_z-2*Wallthickness]){
-                    rotate([0,-90,0]){
-                        translate([0,0,-Wallthickness+Wallthickness/4]){
-                            Screwcutter(100,8.5,100,3.1,1.5,4.1);
+                    translate([0,Length_y-Length_y/12-Wallthickness,Height_z-2*Wallthickness]){
+                        rotate([0,-90,0]){
+                            translate([0,0,-Wallthickness+Wallthickness/4]){
+                                Screwcutter(100,8.5,100,3.1,1.5,4.1);
+                            }
                         }
-                    }
-                }   
-                translate([0,(Length_y/2)-Wallthickness/2,Height_z-2*Wallthickness]){
-                    rotate([0,-90,0]){
-                        translate([0,0,-Wallthickness+Wallthickness/4]){
-                            Screwcutter(100,8.5,100,3.1,1.5,4.1);
+                    }   
+                    translate([0,(Length_y/2)-Wallthickness/2,Height_z-2*Wallthickness]){
+                        rotate([0,-90,0]){
+                            translate([0,0,-Wallthickness+Wallthickness/4]){
+                                Screwcutter(100,8.5,100,3.1,1.5,4.1);
+                            }
                         }
                     }
                 }
@@ -125,7 +139,7 @@ $fn = $preview ? LOW_RESOLUTION : HIGH_RESOLUTION ; // Facets in preview (F5) se
         }
         translate([0,0,0]){
         }
-        translate([Depth_x+Wallthickness,-Wallthickness-Radius-1/2,0]){ // Yah its dirty, but i am Starved now and want to eat!
+        translate([Depth_x+Wallthickness,-Wallthickness-FilletRadius-1/2,0]){ // Yah its dirty, but i am Starved now and want to eat!
             cube([Wallthickness/2,Length_y+2*Wallthickness,Wallthickness]);
         }
         translate([0,0,0]){
@@ -142,7 +156,7 @@ $fn = $preview ? LOW_RESOLUTION : HIGH_RESOLUTION ; // Facets in preview (F5) se
 //        translate([22,11,0]){
 //            SCREWDRIVER(25,9);
 //        }
-//        translate([22,33,0]){
+//        translate([19.5,30,0]){
 //            SCREWDRIVER(12,3);
 //        }
     }
@@ -246,7 +260,7 @@ module Frame(){
                 }
             }
         }
-        translate([Depth_x+Wallthickness,-Wallthickness-Radius-1/2,0]){ // Yah its dirty, but i am Starved now and want to eat!
+        translate([Depth_x+Wallthickness,-Wallthickness-FilletRadius-1/2,0]){ // Yah its dirty, but i am Starved now and want to eat!
             cube([Wallthickness/2,Length_y+2*Wallthickness,Wallthickness]);
         }
     }
@@ -282,11 +296,11 @@ module Frame(){
 module Hex_Mesch_Cutter(){
     linear_extrude(Wallthickness*2){
         intersection(){
-            Projection_Cutter(-Wallthickness-Radius){
+            Projection_Cutter(-Wallthickness-FilletRadius){
                 #Frame_BlockCUT();
             }
             translate([DELTA_X,DELTA_Y,0]){
-                HEX_Mesh_Pattern(8,15,4.5,45,155,2);
+                HEX_Mesh_Pattern(HolesN_X,HolesN_Y,WallThicknesHEX,HEXFilletRadius);
             }
         }
     }
@@ -297,10 +311,10 @@ module Frame_BlockCUT(){
     translate([Wallthickness,-Wallthickness/2+Length_y,Wallthickness]){
         rotate([90,0,0]){
             minkowski(){
-                translate([Radius,Radius,Radius]){
-                    Frame_BaseBlock(Length_y-2*Radius-2*Wallthickness);
+                translate([FilletRadius,FilletRadius,FilletRadius]){
+                    Frame_BaseBlock(Length_y-2*FilletRadius-2*Wallthickness);
                 }
-                sphere(r=Radius,$fn=74);
+                sphere(r=FilletRadius,$fn=74);
             }
         }
     }
