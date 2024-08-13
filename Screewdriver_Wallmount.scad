@@ -53,12 +53,13 @@ FN_ExtraFine=144;
 if (DesignStatus=="printing"){
     Main_Assembly(36,76,"false");
 }
-if(DesignStatus=="fitting"){
+if(DesignStatus=="fitting"){ 
     intersection(){
         translate([0,0,Wallthickness]){
             cube([1000,1000,0.35],center=true);
         }
         Main_Assembly(16,76,"false");
+        //cube([75,75,30],center=true);
     }
 }
 if (DesignStatus=="sizing"){
@@ -94,21 +95,21 @@ $fn = $preview ? LOW_RESOLUTION : HIGH_RESOLUTION ; // Facets in preview (F5) se
                 translate([0,Length_y/12,Height_z-2*Wallthickness]){
                     rotate([0,-90,0]){
                         translate([0,0,-Wallthickness+Wallthickness/4]){
-                            Screwcutter(100,10,100,4,1,5);
+                            Screwcutter(100,8.5,100,3.1,1.5,4.1);
                         }
                     }
                 }
                 translate([0,Length_y-Length_y/12-Wallthickness,Height_z-2*Wallthickness]){
                     rotate([0,-90,0]){
                         translate([0,0,-Wallthickness+Wallthickness/4]){
-                            Screwcutter(100,10,100,4,1,5);
+                            Screwcutter(100,8.5,100,3.1,1.5,4.1);
                         }
                     }
                 }   
                 translate([0,(Length_y/2)-Wallthickness/2,Height_z-2*Wallthickness]){
                     rotate([0,-90,0]){
                         translate([0,0,-Wallthickness+Wallthickness/4]){
-                            Screwcutter(100,10,100,4,1,5);
+                            Screwcutter(100,8.5,100,3.1,1.5,4.1);
                         }
                     }
                 }
@@ -138,9 +139,12 @@ $fn = $preview ? LOW_RESOLUTION : HIGH_RESOLUTION ; // Facets in preview (F5) se
         union(){
             
         }
-        translate([25,39,0]){
-            //SCREWDRIVER();
-        }
+//        translate([22,11,0]){
+//            SCREWDRIVER(25,9);
+//        }
+//        translate([22,33,0]){
+//            SCREWDRIVER(12,3);
+//        }
     }
 }
 // ===============================================================================
@@ -186,15 +190,15 @@ module see_me_in_colourful(){ // iterates the given modules and colors them auto
 // =--------------------------------- Enviroment Modules ------------------------=
 // ===============================================================================
 // Modules that resembles the Enviroment aka the helmet where to atach a camera mount
-// SCREWDRIVER();
-module SCREWDRIVER(){
+// SCREWDRIVER(20,5);
+module SCREWDRIVER(Base_D=25,Shaft_D=9){
     translate([0,0,0]){
         color(c=[0.5,0.5,0.5], alpha=0.2){
             translate([0,0,Wallthickness]){
-                cylinder(h=100, d1=25, d2=25, $fn=6);
+                cylinder(h=100, d1=Base_D, d2=Base_D, $fn=6);
             }
             translate([0,0,Wallthickness-100]){
-                cylinder(h=100, d1=9, d2=9, $fn=74);
+                cylinder(h=100, d1=Shaft_D, d2=Shaft_D, $fn=74);
             }
         }
     }
@@ -282,7 +286,7 @@ module Hex_Mesch_Cutter(){
                 #Frame_BlockCUT();
             }
             translate([DELTA_X,DELTA_Y,0]){
-                HEX_Mesh_Pattern();
+                HEX_Mesh_Pattern(8,15,4.5,45,155,2);
             }
         }
     }
@@ -465,7 +469,7 @@ module 2D_Rounded_Square_Base_Shape(DIMENSION_X=10,DIMENSION_Y=20,RADIUS=2,CENTE
     }
 }
 //HEX_Mesh_Pattern(){ Mesh(2.5,2.5);}
-!HEX_Mesh_Pattern(7,13,6,45,155,2);
+//HEX_Mesh_Pattern(7,13,6,45,155,2);
 module HEX_Mesh_Pattern(X=7,Y=13,DELTA=6,GRPL_X=45,GRPL_Y=115,MINK_R=1){
 Count_X=X;
 Count_Y=Y;
