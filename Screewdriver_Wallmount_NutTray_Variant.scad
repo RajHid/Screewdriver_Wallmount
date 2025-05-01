@@ -10,7 +10,7 @@
 
 /* [Tab Name_1] */
 // sizing printing or print a small part to test the object.
-DesignStatus="sizing"; // ["sizing","fitting","printing"]
+DesignStatus="sizing"; // ["sizing","fitting","enviroment_fitting","printing"]
 // Variables seen by customizer
 
 Depth_x=80;             // of the box and hex plate
@@ -62,19 +62,26 @@ FN_ExtraFine=144;
 // = Customizer Section =
 // ==================================
 if (DesignStatus=="printing"){
-    Main_Assembly(36,76,"false",No_Mount=false);
+    // Actual printing the objeckt
+    Main_Assembly(36,76,"false",No_Mount=false,Enviroment_Present=false);
 }
 if(DesignStatus=="fitting"){ 
+    // make a smal slice of the object to test print and check fitting
     intersection(){
         translate([0,0,Wallthickness]){
-            cube([1000,1000,0.35],center=true);
+            cube([1000,1000,0.35],center=true); 
         }
-        Main_Assembly(16,76,"false");
+        Main_Assembly(16,76,"false",No_Mount=false,Enviroment_Present=false);
         //cube([75,75,30],center=true);
     }
 }
+if (DesignStatus=="enviroment_fitting"){
+    // Enviroment Struktures visible to test fitting
+    Main_Assembly(36,76,"false",No_Mount=false,Enviroment_Present=true);
+}
 if (DesignStatus=="sizing"){
-    Main_Assembly(16,36,"true");
+    // design the object
+    Main_Assembly(16,36,"true",No_Mount=false,Enviroment_Present=false);
 }
 
 // ==================================
@@ -84,7 +91,7 @@ if (DesignStatus=="sizing"){
 // HIGH_RESOLUTION: high resolution value for rendering the .stl
 // CUT_MODULES_RENDERED: decides if the cuttingmodules get renderred to see them. use cuttingmodules twice one time within the final part to cut and one time to just schow it.
 // Main_Assembly(12,76,true);
-module Main_Assembly(LOW_RESOLUTION=12,HIGH_RESOLUTION=36,CUT_MODULES_RENDERED,No_Mount=false){
+module Main_Assembly(LOW_RESOLUTION=12,HIGH_RESOLUTION=36,CUT_MODULES_RENDERED,No_Mount=false,Enviroment_Present=false){
 $fn = $preview ? LOW_RESOLUTION : HIGH_RESOLUTION ; // Facets in preview (F5) set to 12, in Reder (F6) is set to 72
     see_me_in_colourful(){
         translate([0,0,0]){
@@ -145,21 +152,21 @@ $fn = $preview ? LOW_RESOLUTION : HIGH_RESOLUTION ; // Facets in preview (F5) se
         }
         translate([0,0,0]){
             if(CUT_MODULES_RENDERED=="true"){
-                
             }
             else{
                 echo("CUT_MODULES_RENDERED= ",CUT_MODULES_RENDERED);
             }
         }
         union(){
-            
         }
-//        translate([22,11,0]){
-//            SCREWDRIVER(25,9);
-//        }
-//        translate([19.5,30,0]){
-//            SCREWDRIVER(12,3);
-//        }
+        if(Enviroment_Present==true){
+            translate([22,11,0]){
+                SCREWDRIVER(25,9);
+            }
+            translate([19.5,30,0]){
+                SCREWDRIVER(12,3);
+            }
+        }
     }
 }
 // ===============================================================================
@@ -301,7 +308,7 @@ module Hex_Mesch_Cutter(){
                 #Frame_BlockCUT();
             }
             translate([DELTA_X,DELTA_Y,0]){
-                HEX_Mesh_Pattern(HolesN_X,HolesN_Y,WallThicknesHEX,HEXFilletRadius);
+                //HEX_Mesh_Pattern(HolesN_X,HolesN_Y,WallThicknesHEX,HEXFilletRadius);
             }
         }
     }
@@ -484,25 +491,25 @@ module 2D_Rounded_Square_Base_Shape(DIMENSION_X=10,DIMENSION_Y=20,RADIUS=2,CENTE
     }
 }
 //HEX_Mesh_Pattern(){ Mesh(2.5,2.5);}
-//HEX_Mesh_Pattern(7,13,6,45,155,2);
-module HEX_Mesh_Pattern(X=7,Y=13,DELTA=6,GRPL_X=45,GRPL_Y=115,MINK_R=1){
-Count_X=X;
-Count_Y=Y;
-DIMENSION_X=90;
-DIMENSION_Y=150;
+!difference(){
+// trining to apply the hex Mesh Cutting Pattern Symetrical, based on given Dimensions in X and Y,
+    // How big is one HEX element of Hex Mesh include the Tread Wire Size aka 6 or DIMENSION?
+    // IDEA: mudolo on the Size of HEX elements and the Dimension X and Y ==> gives the Number of wohle fitting HEX elements, Then one can calc the size of that number and shift it so its symetrical ???  
+    DIM_X=140;
+    DIM_Y=111;
+    square([DIM_X,DIM_Y]);
+    translate([(DIM_X%20)/2,DIM_Y/(7*((17/2+6/4)*sqrt(3))),0]){
+        #HEX_Mesh_Pattern(16,20,6,2);
+    }
+}
+module HEX_Mesh_Pattern(Count_X=7,Count_Y=13,DELTA=6,MINK_R=1){
 
-//DELTA=1;
-// MINK_R: Radius of the minkowski funktion to smothen the edges
-X_STEPP=5.5+DELTA;
-Y_STEPP=7.5+DELTA;
+DIMENSION_X=190; 
 
-k=DELTA; //Distance between Hexshapes may be HEX_D/4 is good
-HEX_D=(DIMENSION_X-((Count_X-1)*k/2))/(Count_X-1);
+HEX_D=(DIMENSION_X-((Count_X-1)*DELTA/2))/(Count_X-1);
 
-SCALE_Y=DIMENSION_Y/((HEX_D/2+k/4)*sqrt(3)*(Count_Y-1));
+//SCALE_Y=DIMENSION_Y/((HEX_D/2+k/4)*sqrt(3)*(Count_Y-1));
 echo("HEX_D*Count_Y",HEX_D*(Count_Y));
-echo("GrindingPlate_Y",DIMENSION_Y);
-echo("SCALE_Y",SCALE_Y);
 echo("HEX_D",HEX_D);
 //square([15,(HEX_D/2+k/4)*sqrt(3)*(Count_Y-1)]); // Helper Foo
     
@@ -512,10 +519,10 @@ echo("HEX_D",HEX_D);
             union(){
                 for(j=[0:1:Count_Y-1]){
                     for(i=[0:1:Count_X-1-j%2]){
-                        translate([i*(HEX_D+k/2),0,0]){
-                            translate([(HEX_D/2+k/4)*(j%2),
-                                        j*((HEX_D/2+k/4)*sqrt(3)),
-                                        0]                          ){
+                        translate([i*(HEX_D+DELTA/2),0,0]){
+                            translate(  [(HEX_D/2+DELTA/4)*(j%2),
+                                        j*((HEX_D/2+DELTA/4)*sqrt(3)),
+                                        0]                              ){
                             //translate([0,j*Y_STEPP,0]){
                             rotate([0,0,30]){
                                 //Mesh(0.5){square([HEX_D,HEX_D*1.2],center=true);}
@@ -535,9 +542,9 @@ echo("HEX_D",HEX_D);
             union(){
                 for(j=[0:1:Count_Y-1]){
                     for(i=[0:1:Count_X-1-j%2]){
-                        translate([i*(HEX_D+k/2),0,0]){
-                            translate([(HEX_D/2+k/4)*(j%2),
-                                        j*((HEX_D/2+k/4)*sqrt(3)),
+                        translate([i*(HEX_D+DELTA/2),0,0]){
+                            translate([(HEX_D/2+DELTA/4)*(j%2),
+                                        j*((HEX_D/2+DELTA/4)*sqrt(3)),
                                         0]                          ){
                             //translate([0,j*Y_STEPP,0]){
                             rotate([0,0,30]){
