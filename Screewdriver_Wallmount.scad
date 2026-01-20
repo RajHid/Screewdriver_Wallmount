@@ -10,35 +10,25 @@
 
 /* [Tab Name_1] */
 // sizing printing or print a small part to test the object.
-DesignStatus="sizing"; // ["sizing","fitting","printing"]
+DesignStatus="printing"; // ["sizing","fitting","printing"]
 // Variables seen by customizer
 
-Depth_x=80;             // of the box and hex plate
-Length_y=161;           // of the box and hex plate
-Height_z=35;            // of the box and hex plate
-Wallthickness=5;        // Wallthickness of the box and hex plate
-
-HolesN_X=8;             // Number of Holes in X Direction
-HolesN_Y=15;            // Number of Holes in Y Direction
-WallThicknesHEX=4.5;    // Thicknes of the Hex Mesh wire
-
-FilletRadius=2;         // Fillet radii of the big Part, 
-HEXFilletRadius=2;      // Fillet radius of the Hex cuts
-
-No_Mount=false; // ["false","true"]
-
-DELTA_X=3; // Shifts the Hex Pattern in X
-DELTA_Y=0; // Shifts the Hex Pattern in Y
-
+Depth_x=80;
+Length_y=161;
+Height_z=35;
+Wallthickness=5;
+Radius=2;
+DELTA_X=3;
+DELTA_Y=0;
 
 module __Customizer_Limit__ () {}  // before these, the variables are usable in the cutomizer
 shown_by_customizer = false;
 
 //
 
-//Invisible=42;
-//TestslabTransl_X=25;
-//TestslabRotate_X=30;
+Invisible=42;
+TestslabTransl_X=25;
+TestslabRotate_X=30;
 
 // === Facettes Numbers ===
 
@@ -61,21 +51,19 @@ FN_ExtraFine=144;
 // = Customizer Section =
 // ==================================
 if (DesignStatus=="printing"){
-    Main_Assembly(36,76,"false",No_Mount=false);
+    Main_Assembly(36,76,"false");
 }
-if(DesignStatus=="fitting"){ 
+if(DesignStatus=="fitting"){
     intersection(){
         translate([0,0,Wallthickness]){
             cube([1000,1000,0.35],center=true);
         }
         Main_Assembly(16,76,"false");
-        //cube([75,75,30],center=true);
     }
 }
 if (DesignStatus=="sizing"){
     Main_Assembly(16,36,"true");
 }
-
 // ==================================
 // = MAINASSEMBLY =
 // ==================================
@@ -83,7 +71,7 @@ if (DesignStatus=="sizing"){
 // HIGH_RESOLUTION: high resolution value for rendering the .stl
 // CUT_MODULES_RENDERED: decides if the cuttingmodules get renderred to see them. use cuttingmodules twice one time within the final part to cut and one time to just schow it.
 // Main_Assembly(12,76,true);
-module Main_Assembly(LOW_RESOLUTION=12,HIGH_RESOLUTION=36,CUT_MODULES_RENDERED,No_Mount=false){
+module Main_Assembly(LOW_RESOLUTION=12,HIGH_RESOLUTION=36,CUT_MODULES_RENDERED){
 $fn = $preview ? LOW_RESOLUTION : HIGH_RESOLUTION ; // Facets in preview (F5) set to 12, in Reder (F6) is set to 72
     see_me_in_colourful(){
         translate([0,0,0]){
@@ -103,27 +91,24 @@ $fn = $preview ? LOW_RESOLUTION : HIGH_RESOLUTION ; // Facets in preview (F5) se
                 translate([0,0,0]){
                     Hex_Mesch_Cutter();
                 }
-                if(No_Mount==true){}
-                else if(No_Mount==false){
-                    translate([0,Length_y/12,Height_z-2*Wallthickness]){
-                        rotate([0,-90,0]){
-                            translate([0,0,-Wallthickness+Wallthickness/4]){
-                                Screwcutter(100,8.5,100,3.1,1.5,4.1);
-                            }
+                translate([0,Length_y/12,Height_z-2*Wallthickness]){
+                    rotate([0,-90,0]){
+                        translate([0,0,-Wallthickness+Wallthickness/4]){
+                            Screwcutter(100,10,100,4,1,5);
                         }
                     }
-                    translate([0,Length_y-Length_y/12-Wallthickness,Height_z-2*Wallthickness]){
-                        rotate([0,-90,0]){
-                            translate([0,0,-Wallthickness+Wallthickness/4]){
-                                Screwcutter(100,8.5,100,3.1,1.5,4.1);
-                            }
+                }
+                translate([0,Length_y-Length_y/12-Wallthickness,Height_z-2*Wallthickness]){
+                    rotate([0,-90,0]){
+                        translate([0,0,-Wallthickness+Wallthickness/4]){
+                            Screwcutter(100,10,100,4,1,5);
                         }
-                    }   
-                    translate([0,(Length_y/2)-Wallthickness/2,Height_z-2*Wallthickness]){
-                        rotate([0,-90,0]){
-                            translate([0,0,-Wallthickness+Wallthickness/4]){
-                                Screwcutter(100,8.5,100,3.1,1.5,4.1);
-                            }
+                    }
+                }   
+                translate([0,(Length_y/2)-Wallthickness/2,Height_z-2*Wallthickness]){
+                    rotate([0,-90,0]){
+                        translate([0,0,-Wallthickness+Wallthickness/4]){
+                            Screwcutter(100,10,100,4,1,5);
                         }
                     }
                 }
@@ -139,7 +124,7 @@ $fn = $preview ? LOW_RESOLUTION : HIGH_RESOLUTION ; // Facets in preview (F5) se
         }
         translate([0,0,0]){
         }
-        translate([Depth_x+Wallthickness,-Wallthickness-FilletRadius-1/2,0]){ // Yah its dirty, but i am Starved now and want to eat!
+        translate([Depth_x+Wallthickness,-Wallthickness-Radius-1/2,0]){ // Yah its dirty, but i am Starved now and want to eat!
             cube([Wallthickness/2,Length_y+2*Wallthickness,Wallthickness]);
         }
         translate([0,0,0]){
@@ -153,12 +138,9 @@ $fn = $preview ? LOW_RESOLUTION : HIGH_RESOLUTION ; // Facets in preview (F5) se
         union(){
             
         }
-//        translate([22,11,0]){
-//            SCREWDRIVER(25,9);
-//        }
-//        translate([19.5,30,0]){
-//            SCREWDRIVER(12,3);
-//        }
+        translate([25,39,0]){
+            //SCREWDRIVER();
+        }
     }
 }
 // ===============================================================================
@@ -204,15 +186,15 @@ module see_me_in_colourful(){ // iterates the given modules and colors them auto
 // =--------------------------------- Enviroment Modules ------------------------=
 // ===============================================================================
 // Modules that resembles the Enviroment aka the helmet where to atach a camera mount
-// SCREWDRIVER(20,5);
-module SCREWDRIVER(Base_D=25,Shaft_D=9){
+// SCREWDRIVER();
+module SCREWDRIVER(){
     translate([0,0,0]){
         color(c=[0.5,0.5,0.5], alpha=0.2){
             translate([0,0,Wallthickness]){
-                cylinder(h=100, d1=Base_D, d2=Base_D, $fn=6);
+                cylinder(h=100, d1=25, d2=25, $fn=6);
             }
             translate([0,0,Wallthickness-100]){
-                cylinder(h=100, d1=Shaft_D, d2=Shaft_D, $fn=74);
+                cylinder(h=100, d1=9, d2=9, $fn=74);
             }
         }
     }
@@ -260,7 +242,7 @@ module Frame(){
                 }
             }
         }
-        translate([Depth_x+Wallthickness,-Wallthickness-FilletRadius-1/2,0]){ // Yah its dirty, but i am Starved now and want to eat!
+        translate([Depth_x+Wallthickness,-Wallthickness-Radius-1/2,0]){ // Yah its dirty, but i am Starved now and want to eat!
             cube([Wallthickness/2,Length_y+2*Wallthickness,Wallthickness]);
         }
     }
@@ -296,11 +278,11 @@ module Frame(){
 module Hex_Mesch_Cutter(){
     linear_extrude(Wallthickness*2){
         intersection(){
-            Projection_Cutter(-Wallthickness-FilletRadius){
+            Projection_Cutter(-Wallthickness-Radius){
                 #Frame_BlockCUT();
             }
             translate([DELTA_X,DELTA_Y,0]){
-                HEX_Mesh_Pattern(HolesN_X,HolesN_Y,WallThicknesHEX,HEXFilletRadius);
+                HEX_Mesh_Pattern();
             }
         }
     }
@@ -311,10 +293,10 @@ module Frame_BlockCUT(){
     translate([Wallthickness,-Wallthickness/2+Length_y,Wallthickness]){
         rotate([90,0,0]){
             minkowski(){
-                translate([FilletRadius,FilletRadius,FilletRadius]){
-                    Frame_BaseBlock(Length_y-2*FilletRadius-2*Wallthickness);
+                translate([Radius,Radius,Radius]){
+                    Frame_BaseBlock(Length_y-2*Radius-2*Wallthickness);
                 }
-                sphere(r=FilletRadius,$fn=74);
+                sphere(r=Radius,$fn=74);
             }
         }
     }
@@ -413,7 +395,7 @@ module Frame_BaseBlock(Length_y=100){
 //Ring_Shaper(3,15,1.5);
 module Ring_Shaper(HEIGHT,OUTER,WALLTHICKNESS){
     linear_extrude(HEIGHT){
-        2D_Ring_Shape(OUTER,WALLTHICKNESS);
+        Ring_2D_Shape(OUTER,WALLTHICKNESS);
     }
 }
 //Linear_Extruding(10,-1){2D_Rounded_Square_Base_Shape(10,20,3);}
@@ -457,14 +439,14 @@ module Frame_BaseShape(Depth_x=50,Height_z=20){
     polygon(points=[[0.0,0.0],[0.0,Height_z],[Depth_x,Wallthickness],[Depth_x,0]]);
 }
 //2D_Ring_Shape(20,1);
-module 2D_Ring_Shape(OUTER_D,WALLTHICKNESS){
+module Ring_2D_Shape(OUTER_D,WALLTHICKNESS){
     difference(){
         circle(d=OUTER_D,$fn=FN_Fine);
         circle(d=OUTER_D-2*WALLTHICKNESS,$fn=FN_Fine);
     }
 }
 //2D_Rounded_Square_Base_Shape(10,20,3);
-module 2D_Rounded_Square_Base_Shape(DIMENSION_X=10,DIMENSION_Y=20,RADIUS=2,CENTER=true){
+module Rounded_2D_Square_Base_Shape(DIMENSION_X=10,DIMENSION_Y=20,RADIUS=2,CENTER=true){
     if(CENTER){
         translate([0,0,0]){
             minkowski(){
@@ -483,7 +465,7 @@ module 2D_Rounded_Square_Base_Shape(DIMENSION_X=10,DIMENSION_Y=20,RADIUS=2,CENTE
     }
 }
 //HEX_Mesh_Pattern(){ Mesh(2.5,2.5);}
-//HEX_Mesh_Pattern(7,13,6,45,155,2);
+!HEX_Mesh_Pattern(7,13,6,45,155,2);
 module HEX_Mesh_Pattern(X=7,Y=13,DELTA=6,GRPL_X=45,GRPL_Y=115,MINK_R=1){
 Count_X=X;
 Count_Y=Y;
@@ -606,14 +588,14 @@ module MirrorMirrorOnTheWall(Offset_X,Offset_Y){
 // ===============================================================================
 // =--------------------------------- Smoothing ---------------------------------=
 // ===============================================================================
-2D_Smooth_r=1;
+Smooth_2D_r=1;
 // Radius of a outer Tip Rounding 
-2D_Fillet_r=1;
+Fillet_2D_r=1;
 // Radius of a inner corner Ronding
-2D_Chamfer_DELTA_INN=1;
-2D_Chamfer_DELTA_OUT=2;
+Chamfer_2D_DELTA_INN=1;
+Chamfer_2D_DELTA_OUT=2;
 // a straigt line on edges and corners
-2D_Chamfer_BOOLEAN=false;    
+Chamfer_2D_BOOLEAN=false;    
 module Smooth(r=3){
     //$fn=30;
     offset(r=r,$fn=30){
@@ -683,3 +665,4 @@ module NAME_OF_IMPORT(){
         }
     }
 }
+//git test
